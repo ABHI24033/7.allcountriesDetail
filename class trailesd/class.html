@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .countriescontainer{
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(20deg,yellow,black,pink,white,aqua);
+        }
+        .country{
+            border: 1px solid gray;
+            width: 40%;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 0 8px 10px aqua;
+            color: white;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    
+ <input type="text" id="inptxt">   
+<!-- <button>Search</button> -->
+<div class="countriescontainer"></div>
+
+<script>
+let btn = document.querySelector('button')
+console.log(btn);
+let countriescontainer = document.querySelector('.countriescontainer')
+let inptxt = document.getElementById('inptxt')
+
+//---------------------------------
+
+
+
+// renderData or create card
+
+function renderCountrydata(data){
+    let lang = Object.values(data.languages)
+//    console.log(lang);
+let conLang = lang.join(' ')
+// console.log(conLang);
+
+   let curr = Object.values(data.currencies)[0]
+//    console.log(curr);
+
+let html =`
+<section class="country">
+    <img height="150px"   src=${data?.flags?.png} alt="">
+    <h1>Country</h1>
+    <h3>Name = ${data?.name?.official} </h3>
+    <h3>Language = ${conLang}</h3>
+    <h3>Currency =  ${curr?.symbol} ${curr?.name}  </h3>
+    <h3>Population = ${Math.round(data?.population/1000000)} mill</h3>
+</section>
+`
+countriescontainer.insertAdjacentHTML('beforeend',html)
+}
+
+//renderNeighbour data
+function renderNeighbourdata(data){
+    let lang = Object.values(data.languages)
+//    console.log(lang);
+let conLang = lang.join(' ')
+// console.log(conLang);
+
+   let curr = Object.values(data.currencies)[0]
+//    console.log(curr);
+
+let html =`
+<section class="country">
+   
+    <img height="150px"   src=${data?.flags?.png} alt="">
+    <h1>Neighbour</h1>
+    <h3>Name = ${data?.name?.official} </h3>
+    <h3>Language = ${conLang}</h3>
+    <h3>Currency =  ${curr?.symbol} ${curr?.name}  </h3>
+    <h3>Population = ${Math.round(data?.population/1000000)} mill</h3>
+</section>
+`
+countriescontainer.insertAdjacentHTML('beforeend',html)
+}
+
+
+//Fetching neighbourData
+
+//Fetching countryData 
+function getCountry(para){
+    let request = new XMLHttpRequest();
+request.open('GET','https://restcountries.com/v3.1/name/'+para)
+request.send();
+
+request.addEventListener('load',function(){
+    // console.log(this.responseText);
+    // console.log( JSON.parse(request.responseText));
+
+//array destructuting
+    const [data] = JSON.parse(request.responseText)
+   console.log(data);
+
+//  calling renderData  create card
+   renderCountrydata(data)
+
+//AJAX calling and showing neighbour data [2]
+const neighbour = data.borders[0]
+console.log(neighbour);
+let request2 =new XMLHttpRequest()
+request2.open('GET',`https://restcountries.com/v3.1/alpha/${neighbour}`)
+request2.send()
+
+request2.addEventListener('load',function(){
+    const [data2] = JSON.parse(this.responseText)
+   console.log(data2);
+   //  calling renderNeighnourData  create card
+   renderNeighbourdata(data2)
+})
+
+})
+}
+console.log(inptxt);
+getCountry('portugal')
+
+
+
+</script>
+
+
+
+</body>
+</html>
